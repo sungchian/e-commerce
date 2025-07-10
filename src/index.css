@@ -1,0 +1,33 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-white text-gray-900 font-sans;
+  }
+}
+
+@layer components {
+  /* Product card hover effects */
+  .product-card {
+    @apply transition-all duration-300 hover:shadow-orange-lg hover:-translate-y-1;
+  }
+  
+  /* Image hover effects for products */
+  .image-hover {
+    @apply transition-transform duration-300 hover:scale-105;
+  }
+  
+  /* 橘色陰影 */
+  .shadow-orange-lg {
+    box-shadow: 0 8px 30px -8px rgba(255, 140, 0, 0.25), 0 1.5px 3px 0 rgba(255, 140, 0, 0.10);
+  }
+  .shadow-orange {
+    box-shadow: 0 4px 20px -4px rgba(255, 140, 0, 0.15);
+  }
+  /* Button hover 上提 */
+  .btn-lift {
+    @apply transition-transform duration-300 ease-in-out hover:-translate-y-1;
+  }
+}
