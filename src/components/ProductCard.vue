@@ -76,14 +76,14 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 
-interface Props {
+interface ProductCardProps {
   name: string
   price: string
   image: string
   badge?: string
 }
 
-const props = defineProps<Props>()
+const { name, price, image, badge } = defineProps<ProductCardProps>();
 
 const isHovered = ref(false)
 
