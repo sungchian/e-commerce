@@ -2,34 +2,32 @@
 import { ref, onMounted } from 'vue';
 import { supabase } from '@/supabase'; // 引入 Supabase 實例
 import ProductCard from './ProductCard.vue';
-// 不再需要直接導入圖片，因為圖片 URL 會從數據庫中來
-// import jellycatBunny from "@/assets/jellycat-bunny.jpg";
-// import jellycatElephant from "@/assets/jellycat-elephant.jpg";
-// import americanSnacks from "@/assets/american-snacks.jpg";
-
 // 您現在不需要 UiButton，因為您選擇了直接使用 HTML button
 // import { Button as UiButton } from "@/components/ui/button";
 
 interface Product {
   id: string;
   name: string;
-  price: number; // 注意：數據庫中是 number
+  price: number;
   category_name: string;
   description: string;
-  image_url: string; // 數據庫中是 image_url
+  image_url: string;
   badge?: string;
-  sizes: string[]; // 數據庫中是 TEXT[]
+  sizes: string[];
+  created_at: string; // 確保有 created_at 欄位用於排序
 }
 
 const featuredProducts = ref<Product[]>([]);
 const newArrivals = ref<Product[]>([]);
 
 onMounted(async () => {
-  // 獲取精選產品
+  // 獲取精選產品 (例如 badge 為 'Bestseller' 或 'Popular' 的產品)
+  // 如果有多個 badge 條件，可以使用 .in() 方法，或者進行 OR 邏輯查詢
   const { data: featuredData, error: featuredError } = await supabase
     .from('products')
     .select('*')
-    .limit(4); // 假設精選產品只顯示前4個
+    .or('badge.eq.Bestseller,badge.eq.Popular') // 查詢 badge 是 Bestseller 或 Popular 的
+    .limit(4); // 限制數量
 
   if (featuredError) {
     console.error('Error fetching featured products:', featuredError);
@@ -37,12 +35,12 @@ onMounted(async () => {
     featuredProducts.value = featuredData as Product[];
   }
 
-  // 獲取新品 (可以根據 created_at 或 badge 篩選)
+  // 獲取新品 (根據 created_at 倒序排序取最新)
   const { data: newArrivalsData, error: newArrivalsError } = await supabase
     .from('products')
     .select('*')
-    .order('created_at', { ascending: false }) // 按照創建時間最新排序
-    .limit(2); // 假設新品只顯示前2個
+    .order('created_at', { ascending: false }) // 按照創建時間最新排序 (descending)
+    .limit(2); // 限制數量
 
   if (newArrivalsError) {
     console.error('Error fetching new arrivals:', newArrivalsError);
@@ -76,7 +74,8 @@ onMounted(async () => {
             :key="product.id"
             :name="product.name"
             :price="`$${product.price.toFixed(2)}`"
-            :image="product.image_url" :badge="product.badge"
+            :image="product.image_url"
+            :badge="product.badge"
           />
         </div>
       </div>
@@ -101,7 +100,8 @@ onMounted(async () => {
             <ProductCard
               :name="product.name"
               :price="`$${product.price.toFixed(2)}`"
-              :image="product.image_url" :badge="product.badge"
+              :image="product.image_url"
+              :badge="product.badge"
             />
           </div>
         </div>
