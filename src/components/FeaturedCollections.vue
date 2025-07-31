@@ -1,114 +1,153 @@
+<script setup lang="ts">
+import { ref, onMounted } from 'vue';
+import { supabase } from '@/supabase'; // 引入 Supabase 實例
+import ProductCard from './ProductCard.vue';
+// 不再需要直接導入圖片，因為圖片 URL 會從數據庫中來
+// import jellycatBunny from "@/assets/jellycat-bunny.jpg";
+// import jellycatElephant from "@/assets/jellycat-elephant.jpg";
+// import americanSnacks from "@/assets/american-snacks.jpg";
+
+// 您現在不需要 UiButton，因為您選擇了直接使用 HTML button
+// import { Button as UiButton } from "@/components/ui/button";
+
+interface Product {
+  id: string;
+  name: string;
+  price: number; // 注意：數據庫中是 number
+  category_name: string;
+  description: string;
+  image_url: string; // 數據庫中是 image_url
+  badge?: string;
+  sizes: string[]; // 數據庫中是 TEXT[]
+}
+
+const featuredProducts = ref<Product[]>([]);
+const newArrivals = ref<Product[]>([]);
+
+onMounted(async () => {
+  // 獲取精選產品
+  const { data: featuredData, error: featuredError } = await supabase
+    .from('products')
+    .select('*')
+    .limit(4); // 假設精選產品只顯示前4個
+
+  if (featuredError) {
+    console.error('Error fetching featured products:', featuredError);
+  } else {
+    featuredProducts.value = featuredData as Product[];
+  }
+
+  // 獲取新品 (可以根據 created_at 或 badge 篩選)
+  const { data: newArrivalsData, error: newArrivalsError } = await supabase
+    .from('products')
+    .select('*')
+    .order('created_at', { ascending: false }) // 按照創建時間最新排序
+    .limit(2); // 假設新品只顯示前2個
+
+  if (newArrivalsError) {
+    console.error('Error fetching new arrivals:', newArrivalsError);
+  } else {
+    newArrivals.value = newArrivalsData as Product[];
+  }
+});
+</script>
+
 <template>
-  <section class="py-16 bg-white">
+  <section class="py-16 bg-background">
     <div class="container mx-auto px-4 sm:px-6 lg:px-8">
-      <!-- Featured Products -->
       <div class="mb-16">
         <div class="flex items-center justify-between mb-8">
           <div>
-            <h2 class="text-3xl font-bold text-gray-900 mb-2">
+            <h2 class="text-3xl font-heading font-bold text-foreground mb-2">
               Featured Products
             </h2>
-            <p class="text-gray-600">
+            <p class="text-muted-foreground">
               Our most loved items, handpicked just for you
             </p>
           </div>
-          <button 
-            class="inline-flex items-center justify-center rounded-lg text-base font-semibold border border-gray-300 bg-white text-gray-700 h-12 px-8 shadow-orange transition-colors transition-transform duration-300 ease-in-out hover:bg-[rgb(238,222,211)]"
-            @click="viewAllProducts"
-          >
+          <button class="inline-flex items-center justify-center rounded-lg text-sm font-medium border border-border bg-card text-foreground hover:bg-secondary hover:text-secondary-foreground h-12 px-8">
             View All
           </button>
         </div>
-        
+
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          <ProductCard 
-            v-for="(product, index) in featuredProducts" 
-            :key="index" 
-            v-bind="product" 
+          <ProductCard
+            v-for="product in featuredProducts"
+            :key="product.id"
+            :name="product.name"
+            :price="`$${product.price.toFixed(2)}`"
+            :image="product.image_url" :badge="product.badge"
           />
         </div>
       </div>
 
-      <!-- New Arrivals -->
       <div class="mb-16">
         <div class="flex items-center justify-between mb-8">
           <div>
-            <h2 class="text-3xl font-bold text-gray-900 mb-2">
+            <h2 class="text-3xl font-heading font-bold text-foreground mb-2">
               New Arrivals
             </h2>
-            <p class="text-gray-600">
+            <p class="text-muted-foreground">
               Fresh additions to bring more joy to your collection
             </p>
           </div>
-          <button 
-            class="inline-flex items-center justify-center rounded-lg text-base font-semibold border border-gray-300 bg-white text-gray-700 h-12 px-8 shadow-orange transition-colors transition-transform duration-300 ease-in-out hover:bg-[rgb(238,222,211)]"
-            @click="viewAllNew"
-          >
+          <button class="inline-flex items-center justify-center rounded-lg text-sm font-medium border border-border bg-card text-foreground hover:bg-secondary hover:text-secondary-foreground h-12 px-8">
             See All New
           </button>
         </div>
-        
+
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-6">
-          <div 
-            v-for="(product, index) in newArrivals" 
-            :key="index" 
-            class="lg:col-span-3"
-          >
-            <ProductCard v-bind="product" />
+          <div v-for="product in newArrivals" :key="product.id" class="lg:col-span-3">
+            <ProductCard
+              :name="product.name"
+              :price="`$${product.price.toFixed(2)}`"
+              :image="product.image_url" :badge="product.badge"
+            />
           </div>
         </div>
       </div>
 
-      <!-- Category Showcase -->
       <div class="grid md:grid-cols-2 gap-8">
-        <!-- Jellycat Section -->
-        <div class="relative rounded-2xl overflow-hidden bg-gradient-to-br from-purple-100 to-pink-100 p-8 h-80">
+        <div class="relative rounded-2xl overflow-hidden secondary-gradient p-8 h-80">
           <div class="relative z-10 h-full flex flex-col justify-between">
             <div>
-              <h3 class="text-2xl font-bold text-gray-900 mb-2">
+              <h3 class="text-2xl font-heading font-bold text-foreground mb-2">
                 Jellycat Collection
               </h3>
-              <p class="text-gray-600 mb-4">
+              <p class="text-muted-foreground mb-4">
                 Discover our curated selection of the softest, most loveable plushies
               </p>
             </div>
-            <button 
-              class="self-start inline-flex items-center justify-center rounded-lg text-base font-semibold bg-orange-500 text-white hover:bg-orange-600 transition-colors transition-transform duration-300 ease-in-out hover:-translate-y-1 h-12 px-8 shadow-orange-lg"
-              @click="navigateToJellycat"
-            >
+            <button class="inline-flex items-center justify-center rounded-lg text-sm font-medium primary-gradient text-white font-semibold shadow-soft hover:shadow-hover hover:-translate-y-0.5 self-start h-12 px-8">
               Shop Jellycat
             </button>
           </div>
           <div class="absolute top-4 right-4 w-32 h-32 opacity-20">
             <img
-              :src="jellycatBunny"
+              src="@/assets/jellycat-bunny.jpg"
               alt="Jellycat"
               class="w-full h-full object-cover rounded-full"
             />
           </div>
         </div>
 
-        <!-- American Snacks Section -->
-        <div class="relative rounded-2xl overflow-hidden bg-gradient-to-br from-orange-100 to-yellow-100 p-8 h-80">
+        <div class="relative rounded-2xl overflow-hidden bg-accent p-8 h-80">
           <div class="relative z-10 h-full flex flex-col justify-between">
             <div>
-              <h3 class="text-2xl font-bold text-gray-900 mb-2">
+              <h3 class="text-2xl font-heading font-bold text-accent-foreground mb-2">
                 American Snacks
               </h3>
-              <p class="text-gray-600 mb-4">
+              <p class="text-accent-foreground/70 mb-4">
                 Taste the best flavors from across America, delivered to your door
               </p>
             </div>
-            <button 
-              class="self-start inline-flex items-center justify-center rounded-lg text-base font-semibold border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 transition-colors transition-transform duration-300 ease-in-out hover:-translate-y-1 h-12 px-8 shadow-orange"
-              @click="navigateToSnacks"
-            >
+            <button class="inline-flex items-center justify-center rounded-lg text-sm font-medium bg-secondary text-secondary-foreground hover:bg-secondary-hover shadow-card hover:shadow-soft self-start h-12 px-8">
               Explore Snacks
             </button>
           </div>
           <div class="absolute top-4 right-4 w-32 h-32 opacity-20">
             <img
-              :src="americanSnacks"
+              src="@/assets/american-snacks.jpg"
               alt="American Snacks"
               class="w-full h-full object-cover rounded-full"
             />
@@ -119,69 +158,12 @@
   </section>
 </template>
 
-<script setup lang="ts">
-import { useRouter } from 'vue-router'
-import ProductCard from './ProductCard.vue'
-import jellycatBunny from '@/assets/jellycat-bunny.jpg'
-import jellycatElephant from '@/assets/jellycat-elephant.jpg'
-import americanSnacks from '@/assets/american-snacks.jpg'
-
-const router = useRouter()
-
-const featuredProducts = [
-  {
-    name: "Jellycat Bashful Bunny - Cream",
-    price: "$24.99",
-    image: jellycatBunny,
-    badge: "Bestseller",
-  },
-  {
-    name: "Jellycat Elly Elephant - Medium",
-    price: "$32.99",
-    image: jellycatElephant,
-    badge: "New",
-  },
-  {
-    name: "American Snack Mix Bundle",
-    price: "$19.99",
-    image: americanSnacks,
-    badge: "Popular",
-  },
-  {
-    name: "Jellycat Bashful Bunny - Sage",
-    price: "$24.99",
-    image: jellycatBunny,
-  },
-]
-
-const newArrivals = [
-  {
-    name: "Limited Edition Holiday Bunny",
-    price: "$34.99",
-    image: jellycatBunny,
-    badge: "Limited",
-  },
-  {
-    name: "Gourmet Candy Collection",
-    price: "$28.99",
-    image: americanSnacks,
-    badge: "New",
-  },
-]
-
-const viewAllProducts = () => {
-  // Navigate to all products
+<style scoped>
+/* Assuming secondary-gradient, primary-gradient and other custom styles are defined in your global CSS */
+.secondary-gradient {
+  background-image: linear-gradient(to right top, #f7d1d1, #f5b9c5, #ef9ec4, #e582c3, #d766c5);
 }
-
-const viewAllNew = () => {
-  // Navigate to new arrivals
+.primary-gradient {
+  background-image: linear-gradient(to right top, #a6f7d4, #87f5d0, #67f2cc, #46f0c8, #23edc4);
 }
-
-const navigateToJellycat = () => {
-  router.push('/jellycat')
-}
-
-const navigateToSnacks = () => {
-  router.push('/american-snacks')
-}
-</script> 
+</style>
