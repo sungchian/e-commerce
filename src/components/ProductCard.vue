@@ -44,7 +44,7 @@
       </h3>
       
       <!-- Rating -->
-      <div class="flex items-center space-x-2">
+      <!-- <div class="flex items-center space-x-2">
         <div class="flex items-center">
           <svg v-for="i in 5" :key="i" class="h-3 w-3" :class="i <= 4 ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'" fill="currentColor" viewBox="0 0 20 20">
             <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.286 3.967a1 1 0 00.95.69h4.18c.969 0 1.371 1.24.588 1.81l-3.385 2.46a1 1 0 00-.364 1.118l1.287 3.966c.3.922-.755 1.688-1.54 1.118l-3.385-2.46a1 1 0 00-1.175 0l-3.385 2.46c-.784.57-1.838-.196-1.54-1.118l1.287-3.966a1 1 0 00-.364-1.118l-3.385-2.46c-.783-.57-.38-1.81.588-1.81h4.18a1 1 0 00.95-.69l1.286-3.967z"/>
@@ -52,6 +52,12 @@
         </div>
         <span class="text-xs text-gray-500">
           (4.8)
+        </span>
+      </div> -->
+      <!-- Name_CN -->
+      <div class="flex items-center space-x-2">
+        <span class="font-medium text-gray-900 leading-tight line-clamp-2">
+          {{ name_cn }}
         </span>
       </div>
       
@@ -62,6 +68,7 @@
         </span>
       </div>
       
+
       <!-- Add to Cart Button -->
       <button 
         class="w-full inline-flex items-center justify-center rounded-lg text-sm font-medium bg-[rgb(244,233,225)] text-gray-700 hover:bg-[rgb(238,222,211)] transition-colors duration-300 ease-in-out h-10 px-4 py-2 shadow-orange"
@@ -74,16 +81,18 @@
 </template>
 
 <script setup lang="ts">
+import { describe } from 'node:test'
 import { ref } from 'vue'
 
 interface ProductCardProps {
   name: string
+  name_cn: string
   price: string
   image: string
   badge?: string
 }
 
-const { name, price, image, badge } = defineProps<ProductCardProps>();
+const { name, image, badge, name_cn } = defineProps<ProductCardProps>();
 
 const isHovered = ref(false)
 

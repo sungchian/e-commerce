@@ -8,6 +8,7 @@ import ProductCard from './ProductCard.vue';
 interface Product {
   id: string;
   name: string;
+  name_cn: string; // 中文名稱
   price: number;
   category_name: string;
   description: string;
@@ -73,6 +74,7 @@ onMounted(async () => {
             v-for="product in featuredProducts"
             :key="product.id"
             :name="product.name"
+            :name_cn="product.name_cn"
             :price="`$${product.price.toFixed(2)}`"
             :image="product.image_url"
             :badge="product.badge"

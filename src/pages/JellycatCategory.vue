@@ -90,6 +90,7 @@
           <div v-for="product in filteredProducts" :key="product.id" class="group">
             <ProductCard
               :name="product.name"
+              :name_cn="product.name_cn"
               :price="`$${product.price}`"
               :image="product.image_url"
               :badge="product.badge"
@@ -125,6 +126,7 @@ import { supabase } from '@/supabase'; // 引入 Supabase 客戶端
 interface Product {
   id: string; // Supabase 自動生成的 UUID
   name: string;
+  name_cn: string; // 中文名稱
   price: number;
   category_name: string; // 數據庫中是 category_name (例如 '兔子系列')
   description: string;
