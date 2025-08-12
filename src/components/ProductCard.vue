@@ -4,7 +4,6 @@
     @mouseenter="isHovered = true"
     @mouseleave="isHovered = false"
   >
-    <!-- Image Container -->
     <div class="relative overflow-hidden rounded-t-lg">
       <img
         :src="image"
@@ -12,7 +11,6 @@
         class="w-full h-64 object-cover transition-transform duration-300 group-hover:scale-105"
       />
       
-      <!-- Badge -->
       <span
         v-if="badge"
         class="absolute top-3 left-3 inline-flex items-center rounded-full bg-orange-500 text-white px-2.5 py-0.5 text-xs font-semibold"
@@ -20,7 +18,6 @@
         {{ badge }}
       </span>
       
-      <!-- Quick Add Button -->
       <div 
         class="absolute inset-0 bg-black/40 flex items-center justify-center transition-all duration-300"
         :class="{ 'opacity-100': isHovered, 'opacity-0': !isHovered }"
@@ -36,40 +33,17 @@
       </div>
     </div>
 
-    <!-- Product Info -->
     <div class="p-4 space-y-3">
-      <!-- Name -->
       <h3 class="font-medium text-gray-900 leading-tight line-clamp-2">
-        {{ name }}
-      </h3>
-      
-      <!-- Rating -->
-      <!-- <div class="flex items-center space-x-2">
-        <div class="flex items-center">
-          <svg v-for="i in 5" :key="i" class="h-3 w-3" :class="i <= 4 ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'" fill="currentColor" viewBox="0 0 20 20">
-            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.286 3.967a1 1 0 00.95.69h4.18c.969 0 1.371 1.24.588 1.81l-3.385 2.46a1 1 0 00-.364 1.118l1.287 3.966c.3.922-.755 1.688-1.54 1.118l-3.385-2.46a1 1 0 00-1.175 0l-3.385 2.46c-.784.57-1.838-.196-1.54-1.118l1.287-3.966a1 1 0 00-.364-1.118l-3.385-2.46c-.783-.57-.38-1.81.588-1.81h4.18a1 1 0 00.95-.69l1.286-3.967z"/>
-          </svg>
-        </div>
-        <span class="text-xs text-gray-500">
-          (4.8)
-        </span>
-      </div> -->
-      <!-- Name_CN -->
-      <div class="flex items-center space-x-2">
-        <span class="font-medium text-gray-900 leading-tight line-clamp-2">
-          {{ name_cn }}
-        </span>
-      </div>
-      
-      <!-- Price -->
+        {{ name }} </h3>
+      <h4 class="font-medium text-gray-900 leading-tight line-clamp-2">
+        {{ name_cn }} </h4>
       <div class="flex items-center space-x-2">
         <span class="text-lg font-semibold text-gray-900">
           {{ price }}
         </span>
       </div>
       
-
-      <!-- Add to Cart Button -->
       <button 
         class="w-full inline-flex items-center justify-center rounded-lg text-sm font-medium bg-[rgb(244,233,225)] text-gray-700 hover:bg-[rgb(238,222,211)] transition-colors duration-300 ease-in-out h-10 px-4 py-2 shadow-orange"
         @click="addToCart"
@@ -81,25 +55,26 @@
 </template>
 
 <script setup lang="ts">
-import { describe } from 'node:test'
-import { ref } from 'vue'
+import { ref } from 'vue';
 
 interface ProductCardProps {
-  name: string
-  name_cn: string
-  price: string
-  image: string
-  badge?: string
+  name: string;
+  name_cn: string; // 修正為可選的中文名稱
+  price: string; // 價格現在是格式化過的字串
+  image: string;
+  badge?: string;
 }
 
-const { name, image, badge, name_cn } = defineProps<ProductCardProps>();
+// 解構 props 以避免 'props' is declared but its value is never read. 錯誤
+const { name, name_cn, price, image, badge } = defineProps<ProductCardProps>();
 
-const isHovered = ref(false)
+const isHovered = ref(false);
 
 const addToCart = (event: Event) => {
-  event.stopPropagation()
+  event.stopPropagation();
   // Add to cart logic
-}
+  console.log(`Added "${name}" to cart`);
+};
 </script>
 
 <style scoped>
@@ -109,4 +84,4 @@ const addToCart = (event: Event) => {
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
-</style> 
+</style>

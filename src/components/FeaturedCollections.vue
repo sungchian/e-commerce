@@ -1,56 +1,3 @@
-<script setup lang="ts">
-import { ref, onMounted } from 'vue';
-import { supabase } from '@/supabase'; // 引入 Supabase 實例
-import ProductCard from './ProductCard.vue';
-// 您現在不需要 UiButton，因為您選擇了直接使用 HTML button
-// import { Button as UiButton } from "@/components/ui/button";
-
-interface Product {
-  id: string;
-  name: string;
-  name_cn: string; // 中文名稱
-  price: number;
-  category_name: string;
-  description: string;
-  image_url: string;
-  badge?: string;
-  sizes: string[];
-  created_at: string; // 確保有 created_at 欄位用於排序
-}
-
-const featuredProducts = ref<Product[]>([]);
-const newArrivals = ref<Product[]>([]);
-
-onMounted(async () => {
-  // 獲取精選產品 (例如 badge 為 'Bestseller' 或 'Popular' 的產品)
-  // 如果有多個 badge 條件，可以使用 .in() 方法，或者進行 OR 邏輯查詢
-  const { data: featuredData, error: featuredError } = await supabase
-    .from('products')
-    .select('*')
-    .or('badge.eq.Bestseller,badge.eq.Popular') // 查詢 badge 是 Bestseller 或 Popular 的
-    .limit(4); // 限制數量
-
-  if (featuredError) {
-    console.error('Error fetching featured products:', featuredError);
-  } else {
-    featuredProducts.value = featuredData as Product[];
-  }
-
-  // 獲取新品 (根據 created_at 倒序排序取最新)
-  const { data: newArrivalsData, error: newArrivalsError } = await supabase
-    .from('products')
-    .select('*')
-    .order('created_at', { ascending: false }) // 按照創建時間最新排序 (descending)
-    .limit(2); // 限制數量
-
-  if (newArrivalsError) {
-    console.error('Error fetching new arrivals:', newArrivalsError);
-  } else {
-    newArrivals.value = newArrivalsData as Product[];
-  }
-});
-</script>
-
 <template>
   <section class="py-16 bg-background">
     <div class="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -75,7 +22,7 @@ onMounted(async () => {
             :key="product.id"
             :name="product.name"
             :name_cn="product.name_cn"
-            :price="`$${product.price.toFixed(2)}`"
+            :price="`$${product.price}`"
             :image="product.image_url"
             :badge="product.badge"
           />
@@ -101,7 +48,8 @@ onMounted(async () => {
           <div v-for="product in newArrivals" :key="product.id" class="lg:col-span-3">
             <ProductCard
               :name="product.name"
-              :price="`$${product.price.toFixed(2)}`"
+              :name_cn="product.name_cn"
+              :price="`$${product.price}`"
               :image="product.image_url"
               :badge="product.badge"
             />
@@ -169,3 +117,82 @@ onMounted(async () => {
   background-image: linear-gradient(to right top, #a6f7d4, #87f5d0, #67f2cc, #46f0c8, #23edc4);
 }
 </style>
+
+<script setup lang="ts">
+import { ref, onMounted } from 'vue';
+import { supabase } from '@/supabase'; // 引入 Supabase 實例
+import ProductCard from './ProductCard.vue';
+
+interface Product {
+  id: string;
+  name: string;
+  name_cn: string; // 中文名稱
+  price: number;
+  category_name: string;
+  description: string;
+  image_url: string;
+  badge?: string;
+  created_at: string; // 確保有 created_at 欄位用於排序
+  updated_at: string;
+}
+
+const featuredProducts = ref<Product[]>([]);
+const newArrivals = ref<Product[]>([]);
+const loading = ref(true);
+const error = ref<string | null>(null);
+
+onMounted(async () => {
+  loading.value = true;
+  error.value = null;
+
+  try {
+    // Step 1: 獲取所有有庫存的產品 ID
+    const { data: inStockVariantsData, error: variantsError } = await supabase
+      .from('product_variants')
+      .select('product_id')
+      .gt('stock_count', 0); // 查詢庫存大於0的變體
+
+    if (variantsError) throw variantsError;
+
+    // 從結果中提取並去重產品 ID
+    const inStockProductIds = inStockVariantsData.map(v => v.product_id);
+    const uniqueInStockProductIds = [...new Set(inStockProductIds)];
+
+    // 如果沒有任何產品有庫存，則直接跳過後續查詢
+    if (uniqueInStockProductIds.length === 0) {
+      loading.value = false;
+      return;
+    }
+
+    // Step 2: 查詢精選產品
+    const { data: featuredData, error: featuredError } = await supabase
+      .from('products')
+      .select('id, name, name_cn, price, image_url, badge, category_name, description')
+      .in('id', uniqueInStockProductIds) // 只查詢有庫存的產品 ID
+      .or('badge.eq.Bestseller,badge.eq.Popular')
+      .limit(4);
+
+    if (featuredError) throw featuredError;
+    featuredProducts.value = featuredData as Product[];
+
+    // Step 3: 查詢新品
+    const { data: newArrivalsData, error: newArrivalsError } = await supabase
+      .from('products')
+      .select('id, name, name_cn, price, image_url, badge, category_name, description')
+      .in('id', uniqueInStockProductIds) // 只查詢有庫存的產品 ID
+      .order('created_at', { ascending: false })
+      .limit(2);
+
+    if (newArrivalsError) throw newArrivalsError;
+    newArrivals.value = newArrivalsData as Product[];
+
+  } catch (err: any) {
+    console.error('Error fetching data from Supabase:', err.message);
+    error.value = '無法載入產品，請稍後再試。';
+    featuredProducts.value = [];
+    newArrivals.value = [];
+  } finally {
+    loading.value = false;
+  }
+});
+</script>
