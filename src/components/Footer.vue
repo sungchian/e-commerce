@@ -35,7 +35,7 @@
                 </svg>
               </div>
               <span class="text-xl font-bold text-gray-900">
-                Lovable
+                JelloJam 啾果醬
               </span>
             </router-link>
             <p class="text-sm text-gray-600">
@@ -141,7 +141,7 @@
       <div class="py-6 border-t border-gray-200">
         <div class="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
           <div class="text-sm text-gray-600">
-            © 2024 Lovable. All rights reserved.
+            © 2025 JelloJam. All rights reserved.
           </div>
           <div class="flex items-center space-x-6">
             <div class="text-sm text-gray-600">

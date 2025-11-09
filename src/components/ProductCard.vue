@@ -46,7 +46,7 @@
       
       <button 
         class="w-full inline-flex items-center justify-center rounded-lg text-sm font-medium bg-[rgb(244,233,225)] text-gray-700 hover:bg-[rgb(238,222,211)] transition-colors duration-300 ease-in-out h-10 px-4 py-2 shadow-orange"
-        @click="addToCart"
+        @click="goToProductPage"
       >
         Add to Cart
       </button>
@@ -56,6 +56,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
+import { useRouter } from 'vue-router';
 
 interface ProductCardProps {
   name: string;
@@ -63,10 +64,19 @@ interface ProductCardProps {
   price: string; // 價格現在是格式化過的字串
   image: string;
   badge?: string;
+  productId: string;
 }
 
+const router = useRouter();
+const goToProductPage = (event: Event) => {
+  event.stopPropagation();
+  router.push(`/product/${productId}`);
+  // 下面需要修正
+  // router.push({ name: 'ProductDetail', params: { id: productId } });
+};
+
 // 解構 props 以避免 'props' is declared but its value is never read. 錯誤
-const { name, name_cn, price, image, badge } = defineProps<ProductCardProps>();
+const { name, name_cn, price, image, badge, productId } = defineProps<ProductCardProps>();
 
 const isHovered = ref(false);
 

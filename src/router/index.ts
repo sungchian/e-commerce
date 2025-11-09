@@ -23,6 +23,11 @@ const routes: RouteRecordRaw[] = [
     component: () => import('@/pages/ProductDetail.vue')
   },
   {
+    path: '/about',
+    name: 'About',
+    component: () => import('@/pages/About.vue')
+  },
+  {
     path: '/:pathMatch(.*)*',
     name: 'NotFound',
     component: () => import('@/pages/NotFound.vue')
@@ -34,4 +39,4 @@ const router = createRouter({
   routes
 })
 
-export default router 
+export default router

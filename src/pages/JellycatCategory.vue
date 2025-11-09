@@ -281,7 +281,9 @@ watch([selectedCategory, sortBy], () => {
             Jellycat Collection
           </h1>
           <p class="text-lg text-gray-600 max-w-2xl mx-auto">
-            Discover our curated selection of the softest, most loveable plushies. Each Jellycat is crafted with care to bring comfort and joy to your life.
+            Discover our curated selection of the softest, most loveable
+            plushies. Each Jellycat is crafted with care to bring comfort and
+            joy to your life.
           </p>
         </div>
       </div>
@@ -289,23 +291,62 @@ watch([selectedCategory, sortBy], () => {
 
     <section class="py-8 border-b border-gray-200">
       <div class="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div
+          class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4"
+        >
           <div class="flex flex-wrap items-center gap-4">
-            <button class="inline-flex items-center justify-center rounded-lg text-sm font-medium border border-gray-300 bg-white hover:bg-gray-50 transition-colors h-10 px-4 py-2">
-              <svg class="h-4 w-4 mr-2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                <path d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/>
+            <button
+              class="inline-flex items-center justify-center rounded-lg text-sm font-medium border border-gray-300 bg-white hover:bg-gray-50 transition-colors h-10 px-4 py-2"
+            >
+              <svg
+                class="h-4 w-4 mr-2"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"
+                />
               </svg>
-              Filters
+              篩選器
             </button>
 
-            <select v-model="selectedCategory" class="w-48 flex h-10 w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500">
-              <option value="all">所有產品</option>
-              <option v-for="category in categories" :key="category.value" :value="category.name">
-                {{ category.name }}
+            <!-- 第一層主分類選單 -->
+            <select
+              v-model="selectedParentCategory"
+              class="w-48 flex h-10 rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500"
+            >
+              <option value="">請選擇主分類</option>
+              <option
+                v-for="parent in parentCategories"
+                :key="parent.id"
+                :value="parent.id"
+              >
+                {{ parent.name }}
               </option>
             </select>
 
-            <select v-model="sortBy" class="w-48 flex h-10 w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500">
+            <!-- 第二層子分類選單，依據所選主分類動態顯示子分類 -->
+            <select
+              v-model="selectedCategoryId"
+              class="w-48 flex h-10 rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500"
+            >
+              <option value="">所有產品</option>
+              <
+              <option
+                v-for="child in subCategories"
+                :key="child.id"
+                :value="child.id"
+              >
+                {{ child.name }}
+              </option>
+            </select>
+
+            <select
+              v-model="sortBy"
+              class="w-48 flex w-full h-10 rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500"
+            >
               <option value="newest">最新</option>
               <option value="price-low">價格: 低到高</option>
               <option value="price-high">價格: 高到低</option>
@@ -315,29 +356,49 @@ watch([selectedCategory, sortBy], () => {
 
           <div class="flex items-center gap-2">
             <button
-              :class="viewMode === 'grid' ? 'bg-orange-500 text-white hover:bg-orange-600' : 'border border-gray-300 bg-white hover:bg-gray-50'"
+              :class="
+                viewMode === 'grid'
+                  ? 'bg-orange-500 text-white hover:bg-orange-600'
+                  : 'border border-gray-300 bg-white hover:bg-gray-50'
+              "
               class="inline-flex items-center justify-center rounded-lg text-sm font-medium transition-colors h-9 px-3"
               @click="viewMode = 'grid'"
             >
-              <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                <rect x="3" y="3" width="7" height="7"/>
-                <rect x="14" y="3" width="7" height="7"/>
-                <rect x="14" y="14" width="7" height="7"/>
-                <rect x="3" y="14" width="7" height="7"/>
+              <svg
+                class="h-4 w-4"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+              >
+                <rect x="3" y="3" width="7" height="7" />
+                <rect x="14" y="3" width="7" height="7" />
+                <rect x="14" y="14" width="7" height="7" />
+                <rect x="3" y="14" width="7" height="7" />
               </svg>
             </button>
             <button
-              :class="viewMode === 'list' ? 'bg-orange-500 text-white hover:bg-orange-600' : 'border border-gray-300 bg-white hover:bg-gray-50'"
+              :class="
+                viewMode === 'list'
+                  ? 'bg-orange-500 text-white hover:bg-orange-600'
+                  : 'border border-gray-300 bg-white hover:bg-gray-50'
+              "
               class="inline-flex items-center justify-center rounded-lg text-sm font-medium transition-colors h-9 px-3"
               @click="viewMode = 'list'"
             >
-              <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                <line x1="8" y1="6" x2="21" y2="6"/>
-                <line x1="8" y1="12" x2="21" y2="12"/>
-                <line x1="8" y1="18" x2="21" y2="18"/>
-                <line x1="3" y1="6" x2="3.01" y2="6"/>
-                <line x1="3" y1="12" x2="3.01" y2="12"/>
-                <line x1="3" y1="18" x2="3.01" y2="18"/>
+              <svg
+                class="h-4 w-4"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+              >
+                <line x1="8" y1="6" x2="21" y2="6" />
+                <line x1="8" y1="12" x2="21" y2="12" />
+                <line x1="8" y1="18" x2="21" y2="18" />
+                <line x1="3" y1="6" x2="3.01" y2="6" />
+                <line x1="3" y1="12" x2="3.01" y2="12" />
+                <line x1="3" y1="18" x2="3.01" y2="18" />
               </svg>
             </button>
           </div>
@@ -349,32 +410,42 @@ watch([selectedCategory, sortBy], () => {
       <div class="container mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between items-center mb-8">
           <p class="text-gray-600">
-            顯示 {{ filteredProducts.length }} 項產品
+            顯示 {{ pagedProducts.length }} /
+            {{ filteredProducts.length }} 項產品
           </p>
         </div>
 
         <div
           class="grid gap-6"
-          :class="viewMode === 'grid'
-            ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
-            : 'grid-cols-1'"
+          :class="
+            viewMode === 'grid'
+              ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
+              : 'grid-cols-1'
+          "
         >
-          <div v-for="product in filteredProducts" :key="product.id" class="group">
+          <div v-for="product in pagedProducts" :key="product.id" class="group">
             <ProductCard
               :name="product.name"
               :name_cn="product.name_cn"
-              :price="`$${product.price.toFixed(2)}`"
+              :price="`$${product.price}`"
               :image="product.image_url"
               :badge="product.badge"
+              :productId="product.id"
             />
-            <div v-if="viewMode === 'list'" class="mt-4 p-4 bg-white rounded-lg border border-gray-200">
+            <div
+              v-if="viewMode === 'list'"
+              class="mt-4 p-4 bg-white rounded-lg border border-gray-200"
+            >
               <p class="text-sm text-gray-600">{{ product.description }}</p>
             </div>
           </div>
         </div>
 
-        <div class="text-center mt-12">
-          <button class="inline-flex items-center justify-center rounded-lg text-base font-semibold border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 transition-colors h-12 px-8">
+        <div class="text-center mt-12" v-if="hasMore">
+          <button
+            class="inline-flex items-center justify-center rounded-lg text-base font-semibold border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 transition-colors h-12 px-8"
+            @click="showMoreProducts"
+          >
             載入更多產品
           </button>
         </div>
@@ -386,21 +457,20 @@ watch([selectedCategory, sortBy], () => {
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue';
-import Header from '@/components/Header.vue';
-import Footer from '@/components/Footer.vue';
-import ProductCard from '@/components/ProductCard.vue';
-import { supabase } from '@/supabase';
+import { ref, computed, onMounted, watch } from "vue";
+import Header from "@/components/Header.vue";
+import Footer from "@/components/Footer.vue";
+import ProductCard from "@/components/ProductCard.vue";
+import { supabase } from "@/supabase";
+import { log } from "console";
 
-// ------------------------------------
-// 定義數據介面，匹配 Supabase 資料庫結構
-// ------------------------------------
 interface Product {
   id: string;
   name: string;
   name_cn: string;
   price: number;
-  category_name: string;
+  // category_name: string;
+  category_id: string;
   description: string;
   image_url: string;
   badge?: string;
@@ -412,121 +482,137 @@ interface Category {
   name: string;
   value: string;
   display_order: number;
-  parent_category_id?: string;
+  parent_category_id?: string | null;
 }
 
-interface FilterOption {
-  value: string;
-  name: string;
+interface CategoryWithChildren extends Category {
+  children?: Category[];
 }
 
-// ------------------------------------
-// 組件狀態
-// ------------------------------------
-const viewMode = ref<'grid' | 'list'>('grid');
-const selectedCategory = ref('all');
-const sortBy = ref('newest');
-
-const allJellycatProducts = ref<Product[]>([]);
-const categories = ref<FilterOption[]>([]);
+const allProducts = ref<Product[]>([]);
+const allCategories = ref<Category[]>([]);
+const viewMode = ref<"grid" | "list">("grid");
+const selectedParentCategory = ref("");
+// const selectedCategory = ref("all");
+const selectedCategoryId = ref("");
+const sortBy = ref("newest");
 const loadingProducts = ref(true);
-const loadingCategories = ref(true);
 const error = ref<string | null>(null);
 
-// ------------------------------------
-// 數據獲取邏輯
-// ------------------------------------
-const loadAllData = async () => {
+// Page load 時撈取20
+const pageSize = 20;
+const currentPage = ref(1);
+
+const fetchData = async () => {
   loadingProducts.value = true;
-  loadingCategories.value = true;
   error.value = null;
 
   try {
-    // Step 1: 獲取所有有庫存的產品 ID
-    const { data: inStockVariantsData, error: variantsError } = await supabase
-      .from('product_variants')
-      .select('product_id')
-      .gt('stock_count', 0);
+    // 產品查詢
+    const { data: productsData, error: productsError } = await supabase
+      .from("products")
+      .select("*");
+    if (productsError) throw productsError;
+    allProducts.value = productsData as Product[]; // 分類查詢 (全部撈，前端再切)
 
-    if (variantsError) throw variantsError;    
-
-    const inStockProductIds = inStockVariantsData.map(v => v.product_id);
-    const uniqueInStockProductIds = [...new Set(inStockProductIds)];
-
-    // 如果沒有任何產品有庫存，則直接跳過後續查詢
-    if (uniqueInStockProductIds.length === 0) {
-      allJellycatProducts.value = [];
-      console.log('No products in stock');
-    } else {
-      // Step 2: 查詢所有 Jellycat 產品並篩選有庫存的
-      const { data: productsData, error: productsError } = await supabase
-        .from('products')
-        .select('*')
-        .ilike('category_name', '%系列') // 篩選所有名稱中包含 '系列' 的分類
-        .in('id', uniqueInStockProductIds); // 只查詢有庫存的產品 ID
-
-      if (productsError) throw productsError;
-      allJellycatProducts.value = productsData as Product[];
-      console.log('Fetched Jellycat products:', allJellycatProducts.value);
-      
-    }
-
-    // Step 3: 獲取所有分類數據
     const { data: categoriesData, error: categoriesError } = await supabase
-      .from('categories')
-      .select('id, name, value, parent_category_id')
-      .order('display_order', { ascending: true });
-
+      .from("categories")
+      .select("id, name, value, parent_category_id, display_order")
+      .order("display_order", { ascending: true });
     if (categoriesError) throw categoriesError;
-
-    const jellycatMainCategory = (categoriesData as Category[]).find((cat: Category) => cat.value === 'jellycat-bunnies');
-
-    if (jellycatMainCategory) {
-      categories.value = (categoriesData as Category[])
-        .filter((cat: Category) => cat.parent_category_id === jellycatMainCategory.id)
-        .map((cat: Category) => ({ value: cat.name, name: cat.name }));
-    }
-
+    allCategories.value = categoriesData as Category[];
   } catch (err: any) {
-    console.error('Error fetching data from Supabase:', err.message);
-    error.value = '無法載入產品或分類，請稍後再試。';
-    allJellycatProducts.value = [];
-    categories.value = [];
+    error.value = "資料載入失敗，請稍後再試。";
+    allProducts.value = [];
+    allCategories.value = [];
   } finally {
     loadingProducts.value = false;
-    loadingCategories.value = false;
   }
 };
 
-onMounted(loadAllData);
+// 主分類（parent_category_id 為 null）
+const parentCategories = computed<CategoryWithChildren[]>(() => {
+  return allCategories.value
+    .filter((cat) => !cat.parent_category_id)
+    .map((parent) => ({
+      ...parent,
+      children: allCategories.value.filter(
+        (child) => child.parent_category_id === parent.id
+      ),
+    }));
+});
 
-// ------------------------------------
-// 計算屬性用於篩選和排序
-// ------------------------------------
+// 子分類選單動態資料
+const subCategories = computed(() => {
+  return (
+    parentCategories.value.find((p) => p.id === selectedParentCategory.value)
+      ?.children ?? []
+  );
+});
+
+// 產品根據選擇分類動態過濾
 const filteredProducts = computed(() => {
-  let products = [...allJellycatProducts.value];
-
-  // 1. 類別篩選
-  if (selectedCategory.value !== 'all') {
-    products = products.filter(product => product.category_name === selectedCategory.value);
+  let products = [...allProducts.value]; // 僅限所選主分類/子分類
+  // const selectedParent = parentCategories.value.find(
+  //   (p) => p.id === selectedParentCategory.value
+  // );
+  if (selectedCategoryId.value) {
+    // 若選了子分類，只顯示該子分類的商品
+    products = products.filter(
+      (p) => p.category_id === selectedCategoryId.value
+    );
+  } else if (selectedParentCategory.value) {
+    // 若只選主分類，顯示「所有屬於該主分類底下子分類」的商品
+    const subCatIds =
+      parentCategories.value
+        .find((p) => p.id === selectedParentCategory.value)
+        ?.children?.map((c) => c.id) ?? [];
+    products = products.filter((p) => subCatIds.includes(p.category_id));
   }
-
-  // 2. 排序
+  // 排序
   switch (sortBy.value) {
-    case 'price-low':
+    case "price-low":
       products.sort((a, b) => a.price - b.price);
       break;
-    case 'price-high':
+    case "price-high":
       products.sort((a, b) => b.price - a.price);
       break;
-    case 'newest':
-      products.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+    case "newest":
+      products.sort(
+        (a, b) =>
+          new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+      );
       break;
-    // ... 其他排序邏輯
   }
-
   return products;
 });
+
+// 取得目前該顯示的 products，基於分頁
+const pagedProducts = computed(() => {
+  const startIndex = 0;
+  const endIndex = currentPage.value * pageSize;  
+  return filteredProducts.value.slice(startIndex, endIndex);
+});
+
+// 顯示更多按鈕的狀態
+const hasMore = computed(
+  () => pagedProducts.value.length < filteredProducts.value.length
+);
+
+// 顯示更多的方法
+function showMoreProducts() {
+  currentPage.value++;
+}
+
+// 切換主分類時，把子分類自動歸零
+watch(selectedParentCategory, () => {
+  selectedCategoryId.value = "";
+});
+watch(filteredProducts, () => {
+  currentPage.value = 1; // 換分類自動回到第1頁
+});
+
+onMounted(fetchData);
 </script>
 
 <style scoped>
